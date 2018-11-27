@@ -12,6 +12,9 @@
 # The mapbox access token
 /src/mapboxAccessToken.json
 
+# images can go separately
+/public/overlays/**
+
 # misc
 .DS_Store
 .env.local
