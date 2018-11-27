@@ -13,7 +13,7 @@
 /src/mapboxAccessToken.json
 
 # images can go separately
-*/overlay.png
+/public/overlays/**
 
 # misc
 .DS_Store
