@@ -1,0 +1,12 @@
+.mapStyle {
+    height: 710px;
+}
+body {
+    font-family: Courier, monospace;
+    background: #6b96e6;
+}
+
+.mapContainer {
+    width: 100%;
+    
+}
