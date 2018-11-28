@@ -8,6 +8,7 @@
 
 # production
 /build
+package-lock.json
 
 # The mapbox access token
 /src/mapboxAccessToken.json
