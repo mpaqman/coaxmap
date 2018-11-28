@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import IntroModal from './Modal';
+import DateSelector from './DateSelector';
 
 import { mapboxAccessToken } from './mapboxAccessToken.json'
 
@@ -9,7 +10,6 @@ import { Map, TileLayer, ScaleControl, ImageOverlay, Circle } from 'react-leafle
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 
-import Calendar from 'react-calendar';
 
 const DEFAULT_VIEWPORT = {
   center: [49.299, -124.695],
@@ -19,14 +19,6 @@ const farmAViewport = {
   center: [49.835, -124.602],
   zoom: 10,
 }
-
-const calendarStyle = {
-  position: 'absolute',
-  top: '0',
-  left: '50%',
-  marginLeft:'-175px',
-  zIndex: '401'
-};
 
 const mapContainerStyle = {
   marginLeft:'64px',
@@ -59,7 +51,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewport: DEFAULT_VIEWPORT,
+      viewport: {center: [49.299, -124.695],
+        zoom: 8,},
       modal: false,//TODO make true. false for dev only
       chloroOpacity: 0,
       zoneVisible: false,
@@ -142,6 +135,7 @@ class App extends Component {
           toggle={() => {this.toggleModal();}}
           show={this.state.modal}
         />
+
         <SideNav
           onSelect={(selected) => {
             this.onNavSelected(selected);
@@ -205,14 +199,15 @@ class App extends Component {
 
 
         <div className="mapContainer" style={mapContainerStyle}>
-          <div className="calendarContainer" style={calendarStyle}>
-            {this.state.displayCalendar &&
-              <Calendar
-                onChange={this.onChangeDate}
-                value={this.state.date}
-              />
-            }
-          </div>
+
+          {
+            this.state.displayCalendar &&
+            <DateSelector 
+              date = {this.state.date}
+              onChangeDate={(selectedDate) => {this.onChangeDate(selectedDate);}}
+            />
+          }
+
           <Map
             onViewportChanged={this.onViewportChanged}
             viewport={this.state.viewport}>
