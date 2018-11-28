@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
+import IntroModal from './Modal';
+import DateSelector from './DateSelector';
 
 import { mapboxAccessToken } from './mapboxAccessToken.json'
 
@@ -8,9 +10,6 @@ import { Map, TileLayer, ScaleControl, ImageOverlay, Circle } from 'react-leafle
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-
-import Calendar from 'react-calendar';
 
 const DEFAULT_VIEWPORT = {
   center: [49.299, -124.695],
@@ -21,16 +20,9 @@ const farmAViewport = {
   zoom: 10,
 }
 
-const calendarStyle = {
-  display: 'inline-block',
-  position: 'absolute',
-  top: '0',
-  right: '0',
-  zIndex: '5000'
-};
-
 const mapContainerStyle = {
-  marginLeft:'64px'
+  marginLeft:'64px',
+  position:'relative',
 };
 
 const farmAPolygon =  [[-124.63559,49.80121],[-124.73984,49.89259],[-124.95712,49.7919],[-124.76486,49.65252],[-124.63559,49.80121]]
@@ -59,22 +51,23 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewport: DEFAULT_VIEWPORT,
+      viewport: {center: [49.299, -124.695],
+        zoom: 8,},
       modal: false,//TODO make true. false for dev only
       chloroOpacity: 0,
       zoneVisible: false,
-      calendarVisible: true,
       curOverlay: "overlays/2017/07/24/overlay.png",
       date: new Date('2017-07-10'),
+      displayCalendar: true,
     };
-    this.toggle = this.toggle.bind(this);
-  }
 
-  toggle() {
+  }
+  toggleModal() { // maybe this should be a callback?
     this.setState({
       modal: !this.state.modal
     });
   }
+
 
   resetView = () => {
     this.setState({ viewport: DEFAULT_VIEWPORT })
@@ -103,7 +96,10 @@ class App extends Component {
     (m.length === 1) && (m = '0' + m);
     let path = "overlays/" + y + "/" + m + "/" + d + "/overlay.png";
 
-    this.setState({curOverlay: path});
+    this.setState({
+      curOverlay: path,
+      displayCalendar: false,
+    });
     console.log("New overlay: " + path);
   }
 
@@ -117,7 +113,7 @@ class App extends Component {
       this.setState({ viewport: farmAViewport, zoneVisible: true })
     }
     if(selected==="info"){
-      this.toggle();
+      this.toggleModal();
     }
     if(selected==="dataProducts/chlorophyll"){
       this.setState({
@@ -125,7 +121,7 @@ class App extends Component {
       });
     }
     if(selected==="calendar"){
-      //this.setState({ date: new Date('2018-11-23') });
+      this.setState({ displayCalendar: !this.state.displayCalendar });
     }
   }
 
@@ -135,18 +131,10 @@ class App extends Component {
 
     return (
       <div id="page">
-        <div>
-        
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>CoaX SPECTRAL</ModalHeader>
-          <ModalBody>
-            Welcome to CoaX SPECTRAL! This is v0.1 of the map. More information should go here.
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>View Map</Button>{' '}
-          </ModalFooter>
-        </Modal>
-      </div>
+        <IntroModal
+          toggle={() => {this.toggleModal();}}
+          show={this.state.modal}
+        />
 
         <SideNav
           onSelect={(selected) => {
@@ -208,14 +196,18 @@ class App extends Component {
           </SideNav.Nav>
         </SideNav>
           
-        <div className="calendarContainer" style={calendarStyle}>
-          <Calendar
-            onChange={this.onChangeDate}
-            value={this.state.date}
-          />
-        </div>
+
 
         <div className="mapContainer" style={mapContainerStyle}>
+
+          {
+            this.state.displayCalendar &&
+            <DateSelector 
+              date = {this.state.date}
+              onChangeDate={(selectedDate) => {this.onChangeDate(selectedDate);}}
+            />
+          }
+
           <Map
             onViewportChanged={this.onViewportChanged}
             viewport={this.state.viewport}>
@@ -227,7 +219,10 @@ class App extends Component {
               accessToken={ mapboxAccessToken }
             />
 
-            <ScaleControl imperial="false" />
+            <ScaleControl 
+              imperial={false}
+              maxWidth={200}
+              />
 
             <ImageOverlay
               bounds={[[59.500, -139.001], [47.001, -121.502]]}
