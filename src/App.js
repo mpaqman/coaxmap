@@ -22,7 +22,7 @@ const farmAViewport = {
 }
 
 const calendarStyle = {
-  disply: 'inline-block',
+  display: 'inline-block',
   position: 'absolute',
   top: '0',
   right: '0',
@@ -30,9 +30,7 @@ const calendarStyle = {
 };
 
 const mapContainerStyle = {
-  position: 'absolute',
-  top: '0',
-  right: '0'
+  marginLeft:'64px'
 };
 
 const farmAPolygon =  [[-124.63559,49.80121],[-124.73984,49.89259],[-124.95712,49.7919],[-124.76486,49.65252],[-124.63559,49.80121]]
@@ -91,7 +89,7 @@ class App extends Component {
     }*/
     //TODO: this still loads tiles from mapbox
 
-    this.setState({ viewport })
+    //this.setState({ viewport })
     console.log("Zoom level: " + viewport.zoom)
   }
   
@@ -217,7 +215,7 @@ class App extends Component {
           />
         </div>
 
-        <div className="mapContainer" stryle={mapContainerStyle}>
+        <div className="mapContainer" style={mapContainerStyle}>
           <Map
             onViewportChanged={this.onViewportChanged}
             viewport={this.state.viewport}>
@@ -229,7 +227,7 @@ class App extends Component {
               accessToken={ mapboxAccessToken }
             />
 
-            <ScaleControl position="bottomright" imperial="false" />
+            <ScaleControl imperial="false" />
 
             <ImageOverlay
               bounds={[[59.500, -139.001], [47.001, -121.502]]}
